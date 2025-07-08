@@ -85,25 +85,6 @@ def local_css(file_name):
 # Apply custom CSS
 local_css("assets/style.css")
 
-# Check API key configuration
-def check_api_key():
-    api_key = os.getenv('GEMINI_API_KEY')
-    if not api_key or api_key == 'YOUR_GEMINI_API_KEY_HERE':
-        st.error("🔑 **API Key Not Configured!**")
-        st.markdown("""
-        **To use this application, you need a valid Gemini API key:**
-        1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
-        2. Sign in with your Google account
-        3. Create a new API key
-        4. Copy the API key
-        5. Edit the `.env` file in your project folder
-        6. Replace `YOUR_GEMINI_API_KEY_HERE` with your actual API key
-        7. Save the file and refresh this page
-        """)
-        st.stop()
-
-check_api_key()
-
 # Sidebar
 with st.sidebar:
     try:
@@ -153,11 +134,11 @@ st.markdown("<p class='sub-header'>Discover your ideal career path with AI-power
 tab1, tab2 = st.tabs(["🔍 Career Finder", "📊 Results"])
 
 with tab1:
-    st.markdown("### 🎯 Tell us about yourself")
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("### Tell us about yourself")
     st.markdown("Enter your skills, interests, and experience to get personalized career recommendations")
-    st.markdown("---")
     
-    with st.form("career_form", clear_on_submit=False):
+    with st.form("career_form"):
         col1, col2 = st.columns(2)
         
         # Pre-fill form if loading from history
@@ -198,6 +179,8 @@ with tab1:
         
         st.markdown("<br>", unsafe_allow_html=True)
         submitted = st.form_submit_button("🚀 Generate Career Guidance")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with tab2:
     if 'results' not in st.session_state:
@@ -381,27 +364,10 @@ if submitted:
             st.rerun()
             
         except Exception as e:
-            error_message = str(e)
+            st.error(f"An error occurred: {e}")
             # Clear progress indicators
             status_text.empty()
             progress_bar.empty()
-            
-            if "API_KEY_INVALID" in error_message or "API key not valid" in error_message:
-                st.error("🔑 **Invalid API Key!**")
-                st.markdown("""
-                **To fix this issue:**
-                1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
-                2. Sign in with your Google account
-                3. Create a new API key
-                4. Copy the new API key
-                5. Edit the `.env` file in your project folder
-                6. Replace `YOUR_GEMINI_API_KEY_HERE` with your new API key
-                7. Save the file and refresh this page
-                """)
-                st.info("💡 **Tip:** Make sure your API key has access to the Gemini API and hasn't expired.")
-            else:
-                st.error(f"❌ **An error occurred:** {error_message}")
-                st.info("Please check your internet connection and try again. If the problem persists, contact support.")
 
 # Footer
 st.markdown("---")

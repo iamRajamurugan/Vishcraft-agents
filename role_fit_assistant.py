@@ -2,6 +2,7 @@
 
 
 import google.generativeai as genai
+import re
 from typing import List, Dict
 import os
 from dotenv import load_dotenv
@@ -37,7 +38,6 @@ class RoleFitAssistant:
                 recommended_roles = [str(text)]
         except Exception:
             # Fallback: try to extract list from text
-            import re
             matches = re.findall(r"\[(.*?)\]", text, re.DOTALL)
             if matches:
                 try:
@@ -50,7 +50,3 @@ class RoleFitAssistant:
         recommended_roles = [r for r in recommended_roles if r and str(r).lower() != 'undefined']
         return {"recommended_roles": recommended_roles}
 
-# Example usage:
-# assistant = RoleFitAssistant(api_key="YOUR_GEMINI_API_KEY")
-# result = assistant.run({"skills": ["Python", "Data Analysis"], "interests": ["AI"], "experience": 2})
-# print(result)

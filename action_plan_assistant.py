@@ -1,7 +1,6 @@
 
-
-
 import google.generativeai as genai
+import re
 from typing import List, Dict
 import os
 from dotenv import load_dotenv
@@ -31,13 +30,10 @@ class ActionPlanAssistant:
         model = genai.GenerativeModel(self.model)
         response = model.generate_content(prompt)
         text = response.text.strip()
-        # DEBUG: Print the raw LLM output for troubleshooting
-        print("\n[ActionPlanAssistant] Raw LLM output:\n", text)
         # Remove code block markers if present
         if text.startswith('```'):
             text = text.strip('`').split('\n', 1)[-1].strip()
         # Try to extract only the dict or variables from the LLM output
-        import re
         result = None
         # 1. Try to extract a dict from anywhere in the output
         match = re.search(r"\{[\s\S]*?\}", text)

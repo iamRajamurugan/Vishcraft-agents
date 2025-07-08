@@ -1,7 +1,6 @@
 
-
-
 import google.generativeai as genai
+import re
 from typing import List, Dict
 import os
 from dotenv import load_dotenv
@@ -31,7 +30,6 @@ class CareerPathAssistant:
             if not isinstance(career_paths, list):
                 career_paths = [str(text)]
         except Exception:
-            import re
             matches = re.findall(r"\[(.*?)\]", text, re.DOTALL)
             if matches:
                 try:
