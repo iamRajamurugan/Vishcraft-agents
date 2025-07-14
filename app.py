@@ -150,7 +150,7 @@ st.markdown("<h1 class='main-header'>VishCraft AI Career Guidance</h1>", unsafe_
 st.markdown("<p class='sub-header'>Discover your ideal career path with AI-powered guidance</p>", unsafe_allow_html=True)
 
 # Create tabs
-tab1, tab2 = st.tabs(["🔍 Career Finder", "📊 Results"])
+tab1, tab2, tab3 = st.tabs(["🔍 Career Finder", "📊 Results", "📈 Progress Tracker"])
 
 with tab1:
     st.markdown("### 🎯 Tell us about yourself")
@@ -207,7 +207,28 @@ with tab2:
         
         # Success header
         st.markdown("<div class='success-card'>", unsafe_allow_html=True)
-        st.markdown("### 🎉 Your Personalized Career Guidance")
+        st.markdown("### 🎉 Your Enhanced Career Guidance")
+        
+        # Display enhanced features
+        enhanced_features = results.get("enhanced_features", {})
+        if enhanced_features:
+            features_text = []
+            if enhanced_features.get("personality_inference"):
+                features_text.append("**Personality-Based Matching**")
+            if enhanced_features.get("lateral_paths"):
+                features_text.append("**Vertical & Lateral Paths**")
+            if enhanced_features.get("adaptive_planning"):
+                features_text.append("**Adaptive Action Plan**")
+            
+            st.markdown(f"✨ {' • '.join(features_text)}")
+        
+        # Display personality profile if available
+        personality_profile = results.get("role_fit", {}).get("personality_profile", {})
+        if personality_profile:
+            st.markdown(f"**Your Profile:** {', '.join(personality_profile.get('personality_traits', []))} | "
+                       f"Work Style: {personality_profile.get('work_style', 'N/A')} | "
+                       f"Environment: {personality_profile.get('preferred_environment', 'N/A')}")
+        
         st.markdown(f"Based on **{len(results['role_fit']['recommended_roles'])}** recommended roles and **{len(results['career_path']['career_paths'])}** career paths")
         st.markdown("</div>", unsafe_allow_html=True)
         
@@ -227,12 +248,30 @@ with tab2:
             
             st.markdown("<div class='card'>", unsafe_allow_html=True)
             st.markdown("<div class='section-title'>🎯 Career Paths</div>", unsafe_allow_html=True)
-            paths = results.get("career_path", {}).get("career_paths", [])
-            if paths:
-                for path in paths:
-                    st.markdown(f"<div class='list-item'>🛣️ {path}</div>", unsafe_allow_html=True)
+            
+            # Display vertical and lateral paths separately if available
+            vertical_paths = results.get("career_path", {}).get("vertical_paths", [])
+            lateral_paths = results.get("career_path", {}).get("lateral_paths", [])
+            
+            if vertical_paths or lateral_paths:
+                if vertical_paths:
+                    st.markdown("**📈 Vertical Growth Paths:**")
+                    for path in vertical_paths:
+                        st.markdown(f"<div class='list-item'>⬆️ {path}</div>", unsafe_allow_html=True)
+                
+                if lateral_paths:
+                    st.markdown("**↔️ Lateral Transition Paths:**")
+                    for path in lateral_paths:
+                        st.markdown(f"<div class='list-item'>� {path}</div>", unsafe_allow_html=True)
             else:
-                st.warning("No career paths found.")
+                # Fallback to combined paths
+                paths = results.get("career_path", {}).get("career_paths", [])
+                if paths:
+                    for path in paths:
+                        st.markdown(f"<div class='list-item'>�🛣️ {path}</div>", unsafe_allow_html=True)
+                else:
+                    st.warning("No career paths found.")
+            
             st.markdown("</div>", unsafe_allow_html=True)
             
         with col2:
@@ -246,6 +285,25 @@ with tab2:
             else:
                 st.info("No significant skill gaps identified. You seem well-prepared!")
             st.markdown("</div>", unsafe_allow_html=True)
+            
+            # Progress Tracking Section
+            progress_tracker = results.get("action_plan", {}).get("progress_tracker", {})
+            if progress_tracker:
+                st.markdown("<div class='card'>", unsafe_allow_html=True)
+                st.markdown("<div class='section-title'>📊 Progress Tracking</div>", unsafe_allow_html=True)
+                
+                total_skills = progress_tracker.get("total_skills_needed", 0)
+                completed_skills = progress_tracker.get("skills_completed", 0)
+                
+                if total_skills > 0:
+                    progress_percentage = (completed_skills / total_skills) * 100
+                    st.progress(progress_percentage / 100)
+                    st.markdown(f"**Progress:** {completed_skills}/{total_skills} skills ({progress_percentage:.1f}%)")
+                else:
+                    st.markdown("**Ready to start your journey!**")
+                
+                st.markdown(f"*Last updated: {progress_tracker.get('last_updated', 'N/A')}*")
+                st.markdown("</div>", unsafe_allow_html=True)
         
         # Action plan (full width)
         st.markdown("<div class='card'>", unsafe_allow_html=True)
